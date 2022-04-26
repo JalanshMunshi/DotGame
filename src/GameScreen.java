@@ -1,11 +1,14 @@
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameScreen {
 
     JFrame frame = new JFrame();
     JPanel buttonPanel = new JPanel();
+    List<Pair<Integer, Integer>> points = new ArrayList<>();
+    Integer yLimit;
 
     GameScreen() {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -17,6 +20,7 @@ public class GameScreen {
 
         buttonPanel.setLayout(null);
         buttonPanel.setBounds(0, 0, 800, 120);
+        yLimit = 150;
         buttonPanel.setBackground(Color.BLACK);
 
         JButton loadButton = new JButton("Load");
@@ -35,6 +39,8 @@ public class GameScreen {
         buttonPanel.add(randomButton);
         buttonPanel.add(clearButton);
         buttonPanel.add(runButton);
+
+        frame.addMouseListener(new EventListeners(frame, points, yLimit));
 
         frame.add(buttonPanel, BorderLayout.NORTH);
     }
