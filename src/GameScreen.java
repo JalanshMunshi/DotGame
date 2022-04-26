@@ -1,5 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +43,25 @@ public class GameScreen {
         buttonPanel.add(randomButton);
         buttonPanel.add(clearButton);
         buttonPanel.add(runButton);
+
+        saveButton.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent clickEvent) {
+                System.out.println("Save button clicked.");
+                File pointsCsv = new File("points.csv");
+                try {
+                    PrintWriter outfile = new PrintWriter(pointsCsv);
+                    points.forEach(point -> {
+                        outfile.write(point.getX().toString() + ',' + point.getY().toString());
+                        outfile.write('\n');
+                    });
+                    outfile.close();
+                    System.out.println("File saved.");
+                } catch (FileNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
 
         frame.addMouseListener(new EventListeners(frame, points, yLimit));
 
