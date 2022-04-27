@@ -7,27 +7,29 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Scanner;
 
 public class GameScreen {
 
     JFrame frame = new JFrame();
     JPanel buttonPanel = new JPanel();
     List<Pair<Integer, Integer>> points = new ArrayList<>();
+    Map<Pair<Integer, Integer>, Boolean> randomPoints = new HashMap<>();
     Integer yLimit;
+    private static final Integer GRID_DIM = 600;
+    private final static Integer RANDOM_POINTS = 100;
 
     GameScreen() {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 600);
+        frame.setSize(GRID_DIM, GRID_DIM);
         frame.setTitle("Dot Game");
         frame.setLayout(null);
         frame.setResizable(false);
         frame.setVisible(true);
 
         buttonPanel.setLayout(null);
-        buttonPanel.setBounds(0, 0, 800, 120);
+        buttonPanel.setBounds(0, 0, GRID_DIM, 120);
         yLimit = 150;
         buttonPanel.setBackground(Color.BLACK);
 
@@ -68,8 +70,7 @@ public class GameScreen {
                             Integer xPos = Integer.valueOf(stringCoordinates[0]);
                             Integer yPos = Integer.valueOf(stringCoordinates[1]);
                             points.add(new Pair<>(xPos, yPos));
-                            Graphics g = frame.getGraphics();
-                            g.fillOval(xPos, yPos, 2*EventListeners.OVAL_RADIUS, 2*EventListeners.OVAL_RADIUS);
+                            addPointToCanvas(frame.getGraphics(), new Pair<>(xPos, yPos));
                         }
                     } catch (FileNotFoundException e) {
                         throw new RuntimeException(e);
@@ -82,7 +83,7 @@ public class GameScreen {
         saveButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent clickEvent) {
-                System.out.println("Save button clicked.");
+//                System.out.println("Save button clicked.");
                 File pointsCsv = new File("points.csv");
                 try {
                     PrintWriter outfile = new PrintWriter(pointsCsv);
@@ -91,15 +92,40 @@ public class GameScreen {
                         outfile.write('\n');
                     });
                     outfile.close();
-                    System.out.println("File saved.");
+//                    System.out.println("File saved.");
                 } catch (FileNotFoundException e) {
                     throw new RuntimeException(e);
                 }
             }
         });
 
-        frame.addMouseListener(new EventListeners(frame, points, yLimit));
+//        Random points generator
+        randomButton.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                Integer pointsAdded = 0;
+                while (pointsAdded < RANDOM_POINTS) {
+                    Random random = new Random();
+                    Integer xPos = random.ints(0, GRID_DIM).findFirst().getAsInt();
+                    Integer yPos = random.ints(yLimit + 1, GRID_DIM).findFirst().getAsInt();
+                    Pair<Integer, Integer> randomPoint = new Pair<>(xPos, yPos);
+                    if(randomPoints.containsKey(randomPoint)) {
+                        continue;
+                    } else {
+                        addPointToCanvas(frame.getGraphics(), randomPoint);
+                        randomPoints.put(randomPoint, true);
+                        points.add(randomPoint);
+                        pointsAdded += 1;
+                    }
+                }
+            }
+        });
 
+        frame.addMouseListener(new EventListeners(frame, points, yLimit));
         frame.add(buttonPanel, BorderLayout.NORTH);
+    }
+
+    public void addPointToCanvas(Graphics g, Pair<Integer, Integer> point) {
+        g.fillOval(point.getX(), point.getY(), 2*EventListeners.OVAL_RADIUS, 2*EventListeners.OVAL_RADIUS);
     }
 }
