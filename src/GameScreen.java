@@ -1,4 +1,7 @@
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -6,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class GameScreen {
 
@@ -43,7 +47,38 @@ public class GameScreen {
         buttonPanel.add(randomButton);
         buttonPanel.add(clearButton);
         buttonPanel.add(runButton);
-
+        
+ //        Action for load button
+        loadButton.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                JFileChooser fileChooser = new JFileChooser(FileSystemView.getFileSystemView());
+                FileFilter filter = new FileNameExtensionFilter("CSV files","csv");
+                fileChooser.setFileFilter(filter);
+                int returnVal = fileChooser.showOpenDialog(null);
+                if(returnVal == JFileChooser.APPROVE_OPTION) {
+//                    System.out.println("You chose to open this file: " + fileChooser.getSelectedFile().getName());
+                    File selectedFile = fileChooser.getSelectedFile();
+                    try {
+                        Scanner fileScanner =  new Scanner(selectedFile);
+                        fileScanner.useDelimiter("\n");
+                        while (fileScanner.hasNext()) {
+                            String line = fileScanner.next();
+                            String[] stringCoordinates = line.split(",");
+                            Integer xPos = Integer.valueOf(stringCoordinates[0]);
+                            Integer yPos = Integer.valueOf(stringCoordinates[1]);
+                            points.add(new Pair<>(xPos, yPos));
+                            Graphics g = frame.getGraphics();
+                            g.fillOval(xPos, yPos, 2*EventListeners.OVAL_RADIUS, 2*EventListeners.OVAL_RADIUS);
+                        }
+                    } catch (FileNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        });
+        
+ //        Action for save button
         saveButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent clickEvent) {

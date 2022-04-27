@@ -10,7 +10,7 @@ public class EventListeners extends MouseAdapter {
     Graphics g;
     List<Pair<Integer, Integer>> points;
     Integer yLimit;
-    private static final int OVAL_RADIUS = 5;
+    public static final int OVAL_RADIUS = 5;
     public EventListeners(JFrame _frame, List<Pair<Integer, Integer>> _points, Integer _yLimit) {
         this.frame = _frame;
         this.g = _frame.getGraphics();
@@ -30,9 +30,9 @@ public class EventListeners extends MouseAdapter {
             points.add(new Pair<>(xPos, yPos));
             g.fillOval(xPos, yPos, 2*OVAL_RADIUS, 2*OVAL_RADIUS);
         }
-        points.forEach(point -> {
-            System.out.println(point.getX());
-            System.out.println(point.getY());
-        });
+    //    points.forEach(point -> {
+    //        System.out.println(point.getX());
+    //        System.out.println(point.getY());
+    //    });
     }
 }
