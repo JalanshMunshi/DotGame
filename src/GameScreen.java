@@ -109,7 +109,7 @@ public class GameScreen {
                     Integer xPos = random.ints(0, GRID_DIM).findFirst().getAsInt();
                     Integer yPos = random.ints(yLimit + 1, GRID_DIM).findFirst().getAsInt();
                     Pair<Integer, Integer> randomPoint = new Pair<>(xPos, yPos);
-                    if(randomPoints.containsKey(randomPoint)) {
+                    if(yPos - EventListeners.OVAL_RADIUS <= yLimit || randomPoints.containsKey(randomPoint)) {
                         continue;
                     } else {
                         addPointToCanvas(frame.getGraphics(), randomPoint);
