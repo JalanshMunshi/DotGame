@@ -14,6 +14,7 @@ public class GameScreen {
 
     JFrame frame = new JFrame();
     JPanel buttonPanel = new JPanel();
+    JButton loadButton, saveButton, randomButton, clearButton, runButton;
     List<Pair<Integer, Integer>> points = new ArrayList<>();
     Map<Pair<Integer, Integer>, Boolean> randomPoints = new HashMap<>();
     Integer yLimit;
@@ -33,11 +34,11 @@ public class GameScreen {
         yLimit = 150;
         buttonPanel.setBackground(Color.BLACK);
 
-        JButton loadButton = new JButton("Load");
-        JButton saveButton = new JButton("Save");
-        JButton randomButton = new JButton("Randomize");
-        JButton clearButton = new JButton("Clear");
-        JButton runButton = new JButton("Run");
+        loadButton = new JButton("Load");
+        saveButton = new JButton("Save");
+        randomButton = new JButton("Randomize");
+        clearButton = new JButton("Clear");
+        runButton = new JButton("Run");
 
         loadButton.setBounds(0, 0, 100, 50);
         saveButton.setBounds(120, 0, 100, 50);
@@ -109,7 +110,9 @@ public class GameScreen {
                     Integer xPos = random.ints(0, GRID_DIM).findFirst().getAsInt();
                     Integer yPos = random.ints(yLimit + 1, GRID_DIM).findFirst().getAsInt();
                     Pair<Integer, Integer> randomPoint = new Pair<>(xPos, yPos);
-                    if(yPos - EventListeners.OVAL_RADIUS <= yLimit || randomPoints.containsKey(randomPoint)) {
+                    if(yPos - EventListeners.OVAL_RADIUS <= yLimit || yPos + 2* EventListeners.OVAL_RADIUS > GRID_DIM
+                        || xPos - EventListeners.OVAL_RADIUS <= 0 || xPos + 2* EventListeners.OVAL_RADIUS > GRID_DIM
+                        || randomPoints.containsKey(randomPoint)) {
                         continue;
                     } else {
                         addPointToCanvas(frame.getGraphics(), randomPoint);
@@ -118,6 +121,16 @@ public class GameScreen {
                         pointsAdded += 1;
                     }
                 }
+            }
+        });
+
+//        Clear the canvas
+        clearButton.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                frame.getGraphics().clearRect(0, yLimit + 2*EventListeners.OVAL_RADIUS, GRID_DIM, GRID_DIM - yLimit);
+                points.clear();
+                randomPoints.clear();
             }
         });
 
