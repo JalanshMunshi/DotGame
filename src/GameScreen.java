@@ -17,7 +17,9 @@ public class GameScreen {
     JButton loadButton, saveButton, randomButton, clearButton, runButton;
     List<Pair<Integer, Integer>> points = new ArrayList<>();
     Map<Pair<Integer, Integer>, Boolean> randomPoints = new HashMap<>();
+    Map<Pair<Integer, Integer>, Boolean> visited = new HashMap<>();
     Integer yLimit;
+    Integer distanceParameter;
     private static final Integer GRID_DIM = 600;
     private final static Integer RANDOM_POINTS = 100;
 
@@ -42,9 +44,9 @@ public class GameScreen {
 
         loadButton.setBounds(0, 0, 100, 50);
         saveButton.setBounds(120, 0, 100, 50);
-        randomButton.setBounds(0, 60, 150, 50);
-        clearButton.setBounds(360, 0, 100, 50);
-        runButton.setBounds(480, 0, 100, 50);
+        clearButton.setBounds(240, 0, 100, 50);
+        randomButton.setBounds(360, 0, 150, 50);
+        runButton.setBounds(0, 60, 100, 50);
         buttonPanel.add(loadButton);
         buttonPanel.add(saveButton);
         buttonPanel.add(randomButton);
@@ -133,9 +135,57 @@ public class GameScreen {
                 randomPoints.clear();
             }
         });
-
+        //        Run the game - DBSCAN
+        runButton.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                String distanceString = JOptionPane.showInputDialog(frame, "Enter the distance parameter.", null);
+                distanceParameter = Integer.valueOf(distanceString);
+                try {
+                    connectPoints();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
         frame.addMouseListener(new EventListeners(frame, points, yLimit));
         frame.add(buttonPanel, BorderLayout.NORTH);
+    }
+    
+        private void connectPoints() throws InterruptedException {
+        Graphics g = frame.getGraphics();
+        Random random = new Random();
+        Integer numberOfPoints = points.size();
+        while (numberOfPoints != visited.size() && points.size() > 0) {
+            Integer startIndex = random.nextInt(points.size());
+            Pair<Integer, Integer> startPoint = points.get(startIndex);
+            Queue<Pair<Integer, Integer>> q = new LinkedList<>();
+            q.add(startPoint);
+            visited.put(startPoint, true);
+            while (!q.isEmpty()) {
+                Pair<Integer, Integer> front = q.remove();
+                points.remove(front);
+                points.forEach(point -> {
+                    if(!visited.containsKey(point)) {
+                        Double euclideanDist = findEuclideanDistance(front, point);
+                        System.out.println(euclideanDist);
+                        if(euclideanDist <= distanceParameter) {
+                            q.add(point);
+                            visited.put(point, true);
+//                            System.out.println("Dist Param");
+//                            System.out.println(distanceParameter);
+
+                        }
+                    }
+                });
+            }
+            Thread.sleep(1000);
+        }
+    }
+
+    private Double findEuclideanDistance(Pair<Integer, Integer> p1, Pair<Integer, Integer> p2) {
+        Integer t1 = p1.getX() - p2.getX(), t2 = p1.getY() - p2.getY();
+        return Math.sqrt(t1*t1 + t2 * t2);
     }
 
     public void addPointToCanvas(Graphics g, Pair<Integer, Integer> point) {
