@@ -174,7 +174,9 @@ public class GameScreen {
                             visited.put(point, true);
 //                            System.out.println("Dist Param");
 //                            System.out.println(distanceParameter);
-
+                            //Adding OVAL_RADIUS to make the line look like it is originating from center
+                            g.drawLine(front.getX() + EventListeners.OVAL_RADIUS, front.getY() + EventListeners.OVAL_RADIUS,
+                                    point.getX() + EventListeners.OVAL_RADIUS, point.getY() + EventListeners.OVAL_RADIUS);
                         }
                     }
                 });
