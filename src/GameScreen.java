@@ -112,7 +112,7 @@ public class GameScreen {
                     Integer xPos = random.ints(0, GRID_DIM).findFirst().getAsInt();
                     Integer yPos = random.ints(yLimit + 1, GRID_DIM).findFirst().getAsInt();
                     Pair<Integer, Integer> randomPoint = new Pair<>(xPos, yPos);
-                    if(yPos - EventListeners.OVAL_RADIUS <= yLimit || yPos + 2* EventListeners.OVAL_RADIUS > GRID_DIM
+                    if(yPos - 2*EventListeners.OVAL_RADIUS <= yLimit || yPos + 2* EventListeners.OVAL_RADIUS > GRID_DIM
                         || xPos - EventListeners.OVAL_RADIUS <= 0 || xPos + 2* EventListeners.OVAL_RADIUS > GRID_DIM
                         || randomPoints.containsKey(randomPoint)) {
                         continue;
@@ -168,7 +168,7 @@ public class GameScreen {
                 points.forEach(point -> {
                     if(!visited.containsKey(point)) {
                         Double euclideanDist = findEuclideanDistance(front, point);
-                        System.out.println(euclideanDist);
+//                        System.out.println(euclideanDist);
                         if(euclideanDist <= distanceParameter) {
                             q.add(point);
                             visited.put(point, true);
